@@ -2,9 +2,22 @@ FROM cm2network/steamcmd:latest
 
 USER root
 
-RUN apt-get update -y
+RUN echo "deb http://deb.debian.org/debian bullseye-backports main" > /etc/apt/sources.list.d/wine.list
 
-RUN apt-get install wine -y
+RUN dpkg --add-architecture i386 && apt-get update -y
+
+RUN apt install -y libvkd3d1:i386
+
+RUN apt install -y \  
+     wine/bullseye-backports \
+     wine32/bullseye-backports \   
+     wine64/bullseye-backports \
+     libwine/bullseye-backports \
+     libwine:i386/bullseye-backports \  
+     fonts-wine/bullseye-backports \
+     libvkd3d1/bullseye-backports \
+     libz-mingw-w64/bullseye-backports \
+     libvkd3d1:i386/bullseye-backports 
 
 RUN apt-get install gettext-base -y
 
@@ -15,8 +28,6 @@ RUN apt-get install x11-utils -y
 RUN apt-get install procps -y
 
 RUN apt-get install tini -y
-
-RUN dpkg --add-architecture i386 && apt-get update && apt-get install wine32 -y
 
 RUN mkdir /saves
 
@@ -51,7 +62,7 @@ ENV V_RISING_QUERY_PORT=9877
 
 ENV V_RISING_SETTING_PRESET=""
 ENV V_RISING_DEATH_CONTAINER_PERMISSIONS="Anyone"
-ENV V_RISING_GAME_MODE="PvP"
+ENV V_RISING_GAME_MODE="PvE"
 
 COPY ./templates /templates
 
@@ -66,6 +77,8 @@ RUN chown -R steam /saves
 RUN chmod +x /launch_server.sh
 
 RUN chmod +x /entrypoint.sh
+
+RUN minimize
 
 USER steam
 
